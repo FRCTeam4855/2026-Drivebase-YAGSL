@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.robot.Constants.LightsConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.LightsSubsystem;
@@ -13,6 +14,7 @@ import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import swervelib.SwerveDrive;
 import swervelib.SwerveInputStream;
+import frc.robot.Robot;
 
 import java.io.File;
 import java.util.function.DoubleSupplier;
@@ -28,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -48,6 +51,8 @@ public class RobotContainer {
   
   public static boolean FieldOriented = true;
 
+  private static boolean Precision = Robot.Precision;
+
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandJoystick m_driverController =
       new CommandJoystick(OperatorConstants.kDriverControllerPort);
@@ -65,11 +70,17 @@ public class RobotContainer {
     configureBindings();
 
     SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
-                                                                () -> m_driverController.getY() * 1,
-                                                                () -> m_driverController.getX() * 1)
-                                                            .withControllerRotationAxis(() -> m_rotController.getX() * -1)
+                                                                () -> {
+                                                                  double yInput = m_driverController.getY();
+                                                                  return (0.4 * yInput + 0.6 * yInput * yInput * yInput) * -0.8;
+                                                                },
+                                                                () -> {
+                                                                  double xInput = m_driverController.getX();
+                                                                  return (0.4 * xInput + 0.6 * xInput * xInput * xInput) * -0.8;
+                                                                })
+                                                            .withControllerRotationAxis(() -> -m_rotController.getX())
                                                             .deadband(OperatorConstants.DEADBAND)
-                                                            .scaleTranslation(0.8)
+                                                            .scaleTranslation(SwerveConstants.scaleTranslation)
                                                             .allianceRelativeControl(true);
 
     SwerveInputStream driveDirectAngle = driveAngularVelocity.copy().withControllerHeadingAxis(m_driverController::getX,
@@ -116,6 +127,7 @@ public class RobotContainer {
     m_driverController.button(5).whileTrue(drivebase.strafeRight());
     m_rotController.button(4).whileTrue(drivebase.forward());
     m_rotController.button(5).whileTrue(drivebase.backward());
+    m_rotController.button(12).onTrue(new InstantCommand(()-> Precision = !Precision));
 
     //light commands
     m_driverController.button(6).whileTrue(new RunCommand(()-> m_lights.setLEDs(LightsConstants.VIOLET), m_lights));
