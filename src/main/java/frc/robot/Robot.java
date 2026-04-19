@@ -8,9 +8,16 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.subsystems.LightsSubsystem;
+import frc.robot.subsystems.SwerveSubsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants.LightsConstants;
+import frc.robot.Constants.SwerveConstants;
+
+
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -18,9 +25,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * this project, you must also update the Main.java file in the project.
  */
 public class Robot extends TimedRobot {
+  private final LightsSubsystem m_lights = new LightsSubsystem();
   private Command m_autonomousCommand;
   private final CommandJoystick m_driverController =
       new CommandJoystick(OperatorConstants.kDriverControllerPort);
+  static boolean Precision = false;
 
   private final RobotContainer m_robotContainer;
 
@@ -35,7 +44,7 @@ public class Robot extends TimedRobot {
   }
     @Override
   public void robotInit(){
-    
+
   }
 
   /**
@@ -50,6 +59,12 @@ public class Robot extends TimedRobot {
 
     SmartDashboard.putNumber("Driver Y", m_driverController.getY());
     SmartDashboard.putNumber("Driver X", m_driverController.getX());
+
+    if (Precision){
+      SwerveConstants.scaleTranslation = SwerveConstants.precisionScaleTranslation;
+    } else {
+      SwerveConstants.scaleTranslation = SwerveConstants.traversalScaleTranslation;
+    }
 
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,
@@ -83,6 +98,8 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     new InstantCommand(() -> m_robotContainer.drivebase.getSwerveDrive().zeroGyro()).schedule();
+    new RunCommand(()-> m_lights.setLEDs(LightsConstants.C1_AND_C2_COLOR_WAVES), m_lights).schedule();
+
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
