@@ -20,10 +20,11 @@ import swervelib.math.Matter;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
     public static final int kRotControllerPort = 1;
-    public static final double DEADBAND = 0.1;    //joystick deadband
+    public static final double DEADBAND = 0.2;    //joystick deadband
   }
 
   public static class SwerveConstants {
@@ -31,6 +32,9 @@ public final class Constants {
       public static final Matter CHASSIS    = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS);
       public static final double LOOP_TIME  = 0.13; //s, 20ms + 110ms sprk max velocity lag
       public static final double MAX_SPEED  = Units.feetToMeters(4.5);
+      public static double scaleTranslation = 0.8;
+      public static final double traversalScaleTranslation = 0.8;
+      public static final double precisionScaleTranslation = 0.4;
       
   }
   public static final class LightsConstants {
