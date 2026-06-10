@@ -9,7 +9,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
-import frc.robot.subsystems.LightsSubsystem;
+// import frc.robot.subsystems.LightsSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import swervelib.SwerveDrive;
@@ -44,14 +44,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  private final LightsSubsystem m_lights = new LightsSubsystem();
+  // private final LightsSubsystem m_lights = new LightsSubsystem();
   private final SendableChooser<Command> autoChooser;
   // The robot's subsystems and commands are defined here...
   public final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
   
   public static boolean FieldOriented = true;
-
-  private static boolean Precision = Robot.Precision;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandJoystick m_driverController =
@@ -80,7 +78,7 @@ public class RobotContainer {
                                                                 })
                                                             .withControllerRotationAxis(() -> -m_rotController.getX())
                                                             .deadband(OperatorConstants.DEADBAND)
-                                                            .scaleTranslation(SwerveConstants.scaleTranslation)
+                                                            .scaleTranslation(1)
                                                             .allianceRelativeControl(true);
 
     SwerveInputStream driveDirectAngle = driveAngularVelocity.copy().withControllerHeadingAxis(m_driverController::getX,
@@ -115,9 +113,9 @@ public class RobotContainer {
   private void configureBindings() {
 
     //drivebase commands
-    m_driverController.button(2).whileTrue(Commands.run(drivebase::lock, drivebase).repeatedly());
+    m_driverController.button(3).whileTrue(Commands.run(drivebase::lock, drivebase).repeatedly());
     m_rotController.button(2).onTrue(Commands.runOnce(() -> toggleFieldOriented()));
-    m_driverController.button(3).debounce(0.1).onTrue(new InstantCommand(() -> drivebase.getSwerveDrive().zeroGyro())); //gyro reset
+    m_driverController.button(2).debounce(0.05).onTrue(new InstantCommand(() -> drivebase.getSwerveDrive().zeroGyro())); //gyro reset
     m_rotController.button(3).debounce(0.1).onTrue(new InstantCommand(() -> drivebase.getSwerveDrive().setGyroOffset(new Rotation3d(0, 0, Math.toRadians(90))))); //gyro 90 offset
 
     NamedCommands.registerCommand("setX", new RunCommand(drivebase::lock, drivebase).repeatedly());
@@ -127,31 +125,30 @@ public class RobotContainer {
     m_driverController.button(5).whileTrue(drivebase.strafeRight());
     m_rotController.button(4).whileTrue(drivebase.forward());
     m_rotController.button(5).whileTrue(drivebase.backward());
-    m_rotController.button(12).onTrue(new InstantCommand(()-> Precision = !Precision));
 
-    //light commands
-    m_driverController.button(6).whileTrue(new RunCommand(()-> m_lights.setLEDs(LightsConstants.VIOLET), m_lights));
-    m_driverController.button(7).whileTrue(new RunCommand(()-> m_lights.setLEDs(LightsConstants.HOT_PINK), m_lights));
-    m_driverController.button(11).whileTrue(new RunCommand(()-> m_lights.setLEDs(LightsConstants.GREEN), m_lights));
-    m_driverController.button(10).whileTrue(new RunCommand(()-> m_lights.setLEDs(LightsConstants.AQUA), m_lights));
+    // //light commands
+    // m_driverController.button(6).whileTrue(new RunCommand(()-> m_lights.setLEDs(LightsConstants.VIOLET), m_lights));
+    // m_driverController.button(7).whileTrue(new RunCommand(()-> m_lights.setLEDs(LightsConstants.HOT_PINK), m_lights));
+    // m_driverController.button(11).whileTrue(new RunCommand(()-> m_lights.setLEDs(LightsConstants.GREEN), m_lights));
+    // m_driverController.button(10).whileTrue(new RunCommand(()-> m_lights.setLEDs(LightsConstants.AQUA), m_lights));
 
-    NamedCommands.registerCommand("Green", new RunCommand(()-> m_lights.setLEDs(LightsConstants.GREEN), m_lights).repeatedly());
-    NamedCommands.registerCommand("Violet", new RunCommand(()-> m_lights.setLEDs(LightsConstants.VIOLET), m_lights).repeatedly());
-    NamedCommands.registerCommand("Hot Pink", new RunCommand(()-> m_lights.setLEDs(LightsConstants.HOT_PINK), m_lights).repeatedly());
-    NamedCommands.registerCommand("Aqua", new RunCommand(()-> m_lights.setLEDs(LightsConstants.AQUA), m_lights).repeatedly());
+    // NamedCommands.registerCommand("Green", new RunCommand(()-> m_lights.setLEDs(LightsConstants.GREEN), m_lights).repeatedly());
+    // NamedCommands.registerCommand("Violet", new RunCommand(()-> m_lights.setLEDs(LightsConstants.VIOLET), m_lights).repeatedly());
+    // NamedCommands.registerCommand("Hot Pink", new RunCommand(()-> m_lights.setLEDs(LightsConstants.HOT_PINK), m_lights).repeatedly());
+    // NamedCommands.registerCommand("Aqua", new RunCommand(()-> m_lights.setLEDs(LightsConstants.AQUA), m_lights).repeatedly());
 
-    NamedCommands.registerCommand("Intake Representation", new RunCommand(()-> m_lights.setLEDs(LightsConstants.GREEN), m_lights).repeatedly()
-                                                                .alongWith(new InstantCommand(()-> System.out.println("Intaking!!!"))));
+    // NamedCommands.registerCommand("Intake Representation", new RunCommand(()-> m_lights.setLEDs(LightsConstants.GREEN), m_lights).repeatedly()
+    //                                                             .alongWith(new InstantCommand(()-> System.out.println("Intaking!!!"))));
 
-    NamedCommands.registerCommand("Launch Representation", new RunCommand(()-> m_lights.setLEDs(LightsConstants.RED), m_lights).repeatedly()
-                                                                .alongWith(new InstantCommand(()-> System.out.println("Launching!!!"))));
+    // NamedCommands.registerCommand("Launch Representation", new RunCommand(()-> m_lights.setLEDs(LightsConstants.RED), m_lights).repeatedly()
+    //                                                             .alongWith(new InstantCommand(()-> System.out.println("Launching!!!"))));
 
-    NamedCommands.registerCommand("Climb Representation", new RunCommand(()-> m_lights.setLEDs(LightsConstants.VIOLET), m_lights).repeatedly()
-                                                                .alongWith(new InstantCommand(()-> System.out.println("Climbing!!!"))));
+    // NamedCommands.registerCommand("Climb Representation", new RunCommand(()-> m_lights.setLEDs(LightsConstants.VIOLET), m_lights).repeatedly()
+    //                                                             .alongWith(new InstantCommand(()-> System.out.println("Climbing!!!"))));
 
-    m_rotController.button(6).whileTrue(NamedCommands.getCommand("Intake Representation"));
-    m_rotController.button(7).whileTrue(NamedCommands.getCommand("Launch Representation"));
-    m_rotController.button(11).whileTrue(NamedCommands.getCommand("Climb Representation"));
+    // m_rotController.button(6).whileTrue(NamedCommands.getCommand("Intake Representation"));
+    // m_rotController.button(7).whileTrue(NamedCommands.getCommand("Launch Representation"));
+    // m_rotController.button(11).whileTrue(NamedCommands.getCommand("Climb Representation"));
   }
 
   /**
