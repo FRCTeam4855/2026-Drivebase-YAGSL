@@ -15,13 +15,13 @@
     "canbus": null
   },
   "encoder": {
-    "type": "ctre_mag",
-    "id": 6,
+    "type": "cancoder",
+    "id": 3,
     "canbus": null
   },
   "inverted": {
     "drive": true,
-    "angle": false
+    "angle": true
   },
   "absoluteEncoderInverted": false
 }

@@ -23,7 +23,7 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
     public static final int kRotControllerPort = 1;
-    public static final double DEADBAND = 0.1;    //joystick deadband
+    public static final double DEADBAND = 0.05;    //joystick deadband
   }
 
   public static class SwerveConstants {
