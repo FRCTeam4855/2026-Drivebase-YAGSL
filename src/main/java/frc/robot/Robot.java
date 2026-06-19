@@ -16,6 +16,8 @@ import frc.robot.subsystems.SwerveSubsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.LightsConstants;
 import frc.robot.Constants.SwerveConstants;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.util.sendable.Sendable;
 
 
 
@@ -58,6 +60,9 @@ public class Robot extends TimedRobot {
 
     SmartDashboard.putNumber("Driver Y", m_driverController.getY());
     SmartDashboard.putNumber("Driver X", m_driverController.getX());
+
+    SmartDashboard.putData("Gyro", (Sendable) m_robotContainer.drivebase.getSwerveDrive().getGyro());
+
 
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,
