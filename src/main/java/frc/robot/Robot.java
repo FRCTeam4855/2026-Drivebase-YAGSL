@@ -55,13 +55,14 @@ public class Robot extends TimedRobot {
    * <p>This runs after the mode specific periodic functions, but before LiveWindow and
    * SmartDashboard integrated updating.
    */
+
   @Override
   public void robotPeriodic() {
 
     SmartDashboard.putNumber("Driver Y", m_driverController.getY());
     SmartDashboard.putNumber("Driver X", m_driverController.getX());
 
-    SmartDashboard.putData("Gyro", (Sendable) m_robotContainer.drivebase.getSwerveDrive().getGyro());
+    SmartDashboard.putNumber("Gyro", m_robotContainer.drivebase.getSwerveDrive().getOdometryHeading().getDegrees());
 
 
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
