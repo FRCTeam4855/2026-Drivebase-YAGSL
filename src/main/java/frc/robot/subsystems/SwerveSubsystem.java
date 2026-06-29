@@ -800,6 +800,5 @@ public class SwerveSubsystem extends SubsystemBase
         module.setDesiredState(new SwerveModuleState(0.5, Rotation2d.fromDegrees(180)), false, true);
       }
     });
-  } 
-
+  }
 }

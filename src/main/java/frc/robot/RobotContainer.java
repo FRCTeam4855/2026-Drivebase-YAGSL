@@ -22,6 +22,7 @@ import java.util.function.DoubleSupplier;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -57,6 +58,9 @@ public class RobotContainer {
 
   private final CommandJoystick m_rotController =
       new CommandJoystick(OperatorConstants.kRotControllerPort);
+
+  private final CommandJoystick m_guitarHero =
+      new CommandJoystick(OperatorConstants.kGuitarHero);
 
 
 
@@ -125,6 +129,13 @@ public class RobotContainer {
     m_driverController.button(5).whileTrue(drivebase.strafeRight());
     m_rotController.button(4).whileTrue(drivebase.forward());
     m_rotController.button(5).whileTrue(drivebase.backward());
+
+    //Guitar movement commands
+    m_guitarHero.pov(0).whileTrue(drivebase.forward());
+    m_guitarHero.pov(90).whileTrue(drivebase.strafeRight());
+    m_guitarHero.pov(180).whileTrue(drivebase.backward());
+    m_guitarHero.pov(270).whileTrue(drivebase.strafeLeft());
+
 
     // //light commands
     // m_driverController.button(6).whileTrue(new RunCommand(()-> m_lights.setLEDs(LightsConstants.VIOLET), m_lights));
