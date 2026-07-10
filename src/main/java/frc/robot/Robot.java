@@ -25,6 +25,9 @@ public class Robot extends TimedRobot {
   private final CommandJoystick m_driverController =
       new CommandJoystick(OperatorConstants.kDriverControllerPort);
 
+  private TalonFX motor1 = new TalonFX(1);
+  private Orchestra orchestra = new Orchestra();
+
   private final RobotContainer m_robotContainer;
 
   /**
@@ -35,17 +38,14 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    orchestra.addInstrument(motor1);
+
   }
   
     @Override
   public void robotInit(){
 
-    TalonFX motor1 = new TalonFX(1);
-    Orchestra orchestra = new Orchestra();
-
-    orchestra.loadMusic("your-song.chrp");
-
-    orchestra.addInstrument(motor1);
+    orchestra.loadMusic("thunderstruck.chrp");
     orchestra.play();
   
   }
