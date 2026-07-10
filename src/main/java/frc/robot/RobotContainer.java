@@ -22,6 +22,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -49,11 +50,8 @@ public class RobotContainer {
   public static boolean FieldOriented = true;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandJoystick m_driverController =
-      new CommandJoystick(OperatorConstants.kDriverControllerPort);
-
-  private final CommandJoystick m_rotController =
-      new CommandJoystick(OperatorConstants.kRotControllerPort);
+  private final XboxController m_driverController =
+      new XboxController(OperatorConstants.kDriverControllerPort);
 
 
 
@@ -66,20 +64,20 @@ public class RobotContainer {
 
     SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
                                                                 () -> {
-                                                                  double yInput = m_driverController.getY();
+                                                                  double yInput = m_driverController.getLeftY();
                                                                   return (0.4 * yInput + 0.6 * yInput * yInput * yInput) * -0.8;
                                                                 },
                                                                 () -> {
-                                                                  double xInput = m_driverController.getX();
+                                                                  double xInput = m_driverController.getLeftX();
                                                                   return (0.4 * xInput + 0.6 * xInput * xInput * xInput) * -0.8;
                                                                 })
-                                                            .withControllerRotationAxis(() -> -m_rotController.getX())
+                                                            .withControllerRotationAxis(() -> -m_driverController.getRightX())
                                                             .deadband(OperatorConstants.DEADBAND)
                                                             .scaleTranslation(1)
                                                             .allianceRelativeControl(true);
 
-    SwerveInputStream driveDirectAngle = driveAngularVelocity.copy().withControllerHeadingAxis(m_driverController::getX,
-                                                                                               m_driverController::getY)
+    SwerveInputStream driveDirectAngle = driveAngularVelocity.copy().withControllerHeadingAxis(m_driverController::getLeftX,
+                                                                                               m_driverController::getLeftY)
                                                            .headingWhile(true);
 
     drivebase.setDefaultCommand(
@@ -110,17 +108,17 @@ public class RobotContainer {
   private void configureBindings() {
 
     //drivebase commands
-    m_driverController.button(2).whileTrue(Commands.run(drivebase::lock, drivebase).repeatedly());
-    m_rotController.button(2).onTrue(Commands.runOnce(() -> toggleFieldOriented()));
-    m_driverController.button(3).debounce(0.1).onTrue(new InstantCommand(() -> drivebase.getSwerveDrive().zeroGyro())); //gyro reset
+    // m_driverController.button(1).whileTrue(Commands.run(drivebase::lock, drivebase).repeatedly());
+    // // m_rotController.button(2).onTrue(Commands.runOnce(() -> toggleFieldOriented()));
+    // m_driverController.button(3).debounce(0.1).onTrue(new InstantCommand(() -> drivebase.getSwerveDrive().zeroGyro())); //gyro reset
 
     NamedCommands.registerCommand("setX", new RunCommand(drivebase::lock, drivebase).repeatedly());
     
     //movement commands
-    m_driverController.button(4).whileTrue(drivebase.strafeLeft());
-    m_driverController.button(5).whileTrue(drivebase.strafeRight());
-    m_rotController.button(4).whileTrue(drivebase.forward());
-    m_rotController.button(5).whileTrue(drivebase.backward());
+    // m_driverController.button(4).whileTrue(drivebase.strafeLeft());
+    // m_driverController.button(5).whileTrue(drivebase.strafeRight());
+    // m_rotController.button(4).whileTrue(drivebase.forward());
+    // m_rotController.button(5).whileTrue(drivebase.backward());
 
   }
 

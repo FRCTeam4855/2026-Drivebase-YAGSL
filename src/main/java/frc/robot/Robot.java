@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.Orchestra;
+import com.ctre.phoenix6.hardware.TalonFX;
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -33,9 +36,18 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
   }
+  
     @Override
   public void robotInit(){
-    
+
+    TalonFX motor1 = new TalonFX(1);
+    Orchestra orchestra = new Orchestra();
+
+    orchestra.loadMusic("your-song.chrp");
+
+    orchestra.addInstrument(motor1);
+    orchestra.play();
+  
   }
 
   /**
