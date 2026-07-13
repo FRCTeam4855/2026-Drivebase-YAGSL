@@ -109,7 +109,12 @@ public class RobotContainer {
 
     //drivebase commands
     // m_driverController.button(1).whileTrue(Commands.run(drivebase::lock, drivebase).repeatedly());
-    // // m_rotController.button(2).onTrue(Commands.runOnce(() -> toggleFieldOriented()));
+    new JoystickButton(m_driverController, XboxController.Button.kA.value)
+        .onTrue(Commands.runOnce(() -> toggleFieldOriented()));
+    new JoystickButton(m_driverController, XboxController.Button.kB.value)
+        .onTrue(new InstantCommand(() -> drivebase.getSwerveDrive().zeroGyro()));
+    new JoystickButton(m_driverController, XboxController.Button.kX.value)
+        .whileTrue(Commands.run(drivebase::lock, drivebase).repeatedly());
     // m_driverController.button(3).debounce(0.1).onTrue(new InstantCommand(() -> drivebase.getSwerveDrive().zeroGyro())); //gyro reset
 
     NamedCommands.registerCommand("setX", new RunCommand(drivebase::lock, drivebase).repeatedly());
