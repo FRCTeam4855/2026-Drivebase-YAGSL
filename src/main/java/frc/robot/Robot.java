@@ -47,6 +47,9 @@ public class Robot extends TimedRobot {
 
     orchestra.loadMusic("thunderstruck.chrp");
     orchestra.play();
+
+    SmartDashboard.putNumber("Translation P", 1.0);
+    SmartDashboard.putNumber("Rotation P", 0.5);
   
   }
 
