@@ -4,10 +4,8 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.Orchestra;
-import com.ctre.phoenix6.hardware.TalonFX;
-
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -22,11 +20,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
-  private final CommandJoystick m_driverController =
-      new CommandJoystick(OperatorConstants.kDriverControllerPort);
-
-  private TalonFX motor1 = new TalonFX(1);
-  private Orchestra orchestra = new Orchestra();
+  private final XboxController m_driverController =
+      new XboxController(OperatorConstants.kDriverControllerPort);
 
   private final RobotContainer m_robotContainer;
 
@@ -38,18 +33,10 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-    orchestra.addInstrument(motor1);
-
   }
   
     @Override
   public void robotInit(){
-
-    orchestra.loadMusic("thunderstruck.chrp");
-    orchestra.play();
-
-    SmartDashboard.putNumber("Translation P", 1.0);
-    SmartDashboard.putNumber("Rotation P", 0.5);
   
   }
 
@@ -63,8 +50,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
 
-    SmartDashboard.putNumber("Driver Y", m_driverController.getY());
-    SmartDashboard.putNumber("Driver X", m_driverController.getX());
+    SmartDashboard.putNumber("Driver X", m_driverController.getRawAxis(4));
 
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,
@@ -102,6 +88,9 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
+
+    RobotContainer.drivebase.getSwerveDrive().zeroGyro();
+
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }

@@ -22,6 +22,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
@@ -45,7 +47,7 @@ public class RobotContainer {
   // private final LightsSubsystem m_lights = new LightsSubsystem();
   private final SendableChooser<Command> autoChooser;
   // The robot's subsystems and commands are defined here...
-  public final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
+  public final static SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
   
   public static boolean FieldOriented = true;
 
@@ -64,12 +66,12 @@ public class RobotContainer {
 
     SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
                                                                 () -> {
-                                                                  double yInput = m_driverController.getLeftY();
-                                                                  return (0.4 * yInput + 0.6 * yInput * yInput * yInput) * -0.8;
+                                                                  double yInput = -m_driverController.getLeftY();
+                                                                  return (0.4 * yInput + 0.6 * yInput * yInput * yInput) * 0.8;
                                                                 },
                                                                 () -> {
-                                                                  double xInput = m_driverController.getLeftX();
-                                                                  return (0.4 * xInput + 0.6 * xInput * xInput * xInput) * -0.8;
+                                                                  double xInput = -m_driverController.getLeftX();
+                                                                  return (0.4 * xInput + 0.6 * xInput * xInput * xInput) * 0.8;
                                                                 })
                                                             .withControllerRotationAxis(() -> -m_driverController.getRightX())
                                                             .deadband(OperatorConstants.DEADBAND)
@@ -115,6 +117,9 @@ public class RobotContainer {
         .onTrue(new InstantCommand(() -> drivebase.getSwerveDrive().zeroGyro()));
     new JoystickButton(m_driverController, XboxController.Button.kX.value)
         .whileTrue(Commands.run(drivebase::lock, drivebase).repeatedly());
+    new JoystickButton(m_driverController, 5).whileTrue(drivebase.strafeLeft());
+    new JoystickButton(m_driverController, 6).whileTrue(drivebase.strafeRight());
+
     // m_driverController.button(3).debounce(0.1).onTrue(new InstantCommand(() -> drivebase.getSwerveDrive().zeroGyro())); //gyro reset
 
     NamedCommands.registerCommand("setX", new RunCommand(drivebase::lock, drivebase).repeatedly());
