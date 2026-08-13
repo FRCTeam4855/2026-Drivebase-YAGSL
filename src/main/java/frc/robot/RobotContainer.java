@@ -113,7 +113,7 @@ public class RobotContainer {
     // m_driverController.button(1).whileTrue(Commands.run(drivebase::lock, drivebase).repeatedly());
     new JoystickButton(m_driverController, XboxController.Button.kA.value)
         .onTrue(Commands.runOnce(() -> toggleFieldOriented()));
-    new JoystickButton(m_driverController, XboxController.Button.kB.value)
+    new JoystickButton(m_driverController, 2)
         .onTrue(new InstantCommand(() -> drivebase.getSwerveDrive().zeroGyro()));
     new JoystickButton(m_driverController, XboxController.Button.kX.value)
         .whileTrue(Commands.run(drivebase::lock, drivebase).repeatedly());
