@@ -7,19 +7,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "3 Meter Test"
+            "pathName": "Box Forward"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "-3 Meter Test"
+            "pathName": "Box Right"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Box Back"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Box Left"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Meter Tests",
+  "folder": null,
   "choreoAuto": false
 }
