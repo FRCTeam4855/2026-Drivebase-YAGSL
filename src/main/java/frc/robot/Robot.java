@@ -20,8 +20,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
-  private final XboxController m_driverController =
-      new XboxController(OperatorConstants.kDriverControllerPort);
+  private final XboxController m_leftController =
+      new XboxController(OperatorConstants.kLeftControllerPort);
 
   private final RobotContainer m_robotContainer;
 
@@ -50,7 +50,8 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
 
-    SmartDashboard.putNumber("Driver X", m_driverController.getRawAxis(4));
+    SmartDashboard.putNumber("Driver X", m_leftController.getRawAxis(0));
+    SmartDashboard.putNumber("Driver Y", m_leftController.getRawAxis(1));
 
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,

@@ -38,26 +38,31 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
   // private final LightsSubsystem m_lights = new LightsSubsystem();
   private final SendableChooser<Command> autoChooser;
   // The robot's subsystems and commands are defined here...
-  public final static SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-  
+  public final static SwerveSubsystem drivebase = new SwerveSubsystem(
+      new File(Filesystem.getDeployDirectory(), "swerve"));
+
   public static boolean FieldOriented = true;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final XboxController m_driverController =
-      new XboxController(OperatorConstants.kDriverControllerPort);
+  private final CommandJoystick m_leftController = new CommandJoystick(OperatorConstants.kLeftControllerPort);
 
+  private final CommandJoystick m_rightController = new CommandJoystick(OperatorConstants.kRightControllerPort);
 
-
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  /**
+   * The container for the robot. Contains subsystems, OI devices, and commands.
+   */
   public RobotContainer() {
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -65,66 +70,75 @@ public class RobotContainer {
     configureBindings();
 
     SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
-                                                                () -> {
-                                                                  double yInput = -m_driverController.getLeftY();
-                                                                  return (0.4 * yInput + 0.6 * yInput * yInput * yInput) * 0.8;
-                                                                },
-                                                                () -> {
-                                                                  double xInput = -m_driverController.getLeftX();
-                                                                  return (0.4 * xInput + 0.6 * xInput * xInput * xInput) * 0.8;
-                                                                })
-                                                            .withControllerRotationAxis(() -> -m_driverController.getRightX())
-                                                            .deadband(OperatorConstants.DEADBAND)
-                                                            .scaleTranslation(0.8)
-                                                            .allianceRelativeControl(true);
+        () -> {
+          double yInput = -m_leftController.getRawAxis(1);
+          return (0.4 * yInput + 0.6 * yInput * yInput * yInput) * 0.8;
+        },
+        () -> {
+          double xInput = -m_leftController.getRawAxis(0);
+          return (0.4 * xInput + 0.6 * xInput * xInput * xInput) * 0.8;
+        })
+        .withControllerRotationAxis(() -> -m_rightController.getRawAxis(0))
+        .deadband(OperatorConstants.DEADBAND)
+        .scaleTranslation(1)
+        .allianceRelativeControl(true);
 
-    SwerveInputStream driveDirectAngle = driveAngularVelocity.copy().withControllerHeadingAxis(m_driverController::getLeftX,
-                                                                                               m_driverController::getLeftY)
-                                                           .headingWhile(true);
+    // SwerveInputStream driveDirectAngle =
+    // driveAngularVelocity.copy().withControllerHeadingAxis(m_driverController.getRawAxis(1),
+    // m_driverController.getRawAxis(2))
+    // .headingWhile(true);
 
     drivebase.setDefaultCommand(
-      drivebase.run(()-> {
-        if(FieldOriented) {
-          drivebase.getSwerveDrive().driveFieldOriented(driveAngularVelocity.get());
-        } else {
-          drivebase.getSwerveDrive().drive(driveAngularVelocity.get());
-        }
-      })
-    );
+        drivebase.run(() -> {
+          if (FieldOriented) {
+            drivebase.getSwerveDrive().driveFieldOriented(driveAngularVelocity.get());
+          } else {
+            drivebase.getSwerveDrive().drive(driveAngularVelocity.get());
+          }
+        }));
   }
 
-
-    public Command getAutonomousCommand() {
+  public Command getAutonomousCommand() {
     return autoChooser.getSelected();
   }
 
   /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
+   * Use this method to define your trigger->command mappings. Triggers can be
+   * created via the
+   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
+   * an arbitrary
    * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
+   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
+   * {@link
+   * CommandXboxController
+   * Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
+   * PS4} controllers or
+   * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
   private void configureBindings() {
 
-    //drivebase commands
-    // m_driverController.button(1).whileTrue(Commands.run(drivebase::lock, drivebase).repeatedly());
-    new JoystickButton(m_driverController, XboxController.Button.kA.value)
+    // drivebase commands
+    m_leftController.button(3)
         .onTrue(Commands.runOnce(() -> toggleFieldOriented()));
-    new JoystickButton(m_driverController, 2)
-        .onTrue(new InstantCommand(() -> drivebase.getSwerveDrive().zeroGyro()));
-    new JoystickButton(m_driverController, XboxController.Button.kX.value)
-        .whileTrue(Commands.run(drivebase::lock, drivebase).repeatedly());
-    new JoystickButton(m_driverController, 5).whileTrue(drivebase.strafeLeft());
-    new JoystickButton(m_driverController, 6).whileTrue(drivebase.strafeRight());
 
-    // m_driverController.button(3).debounce(0.1).onTrue(new InstantCommand(() -> drivebase.getSwerveDrive().zeroGyro())); //gyro reset
+    m_leftController.button(2)
+        .onTrue(new InstantCommand(() -> drivebase.getSwerveDrive().zeroGyro()));
+
+    m_rightController.button(1)
+        .whileTrue(Commands.run(drivebase::lock, drivebase).repeatedly());
+
+    m_leftController.povLeft().whileTrue(drivebase.strafeLeft());
+    m_leftController.povRight().whileTrue(drivebase.strafeRight());
+    m_leftController.povUp().whileTrue(drivebase.forward());
+    m_leftController.povDown().whileTrue(drivebase.backward());
+
+    // m_driverController.button(3).debounce(0.1).onTrue(new InstantCommand(() ->
+    // drivebase.getSwerveDrive().zeroGyro())); //gyro reset
 
     NamedCommands.registerCommand("setX", new RunCommand(drivebase::lock, drivebase).repeatedly());
-    
-    //movement commands
+
+    // movement commands
     // m_driverController.button(4).whileTrue(drivebase.strafeLeft());
     // m_driverController.button(5).whileTrue(drivebase.strafeRight());
     // m_rotController.button(4).whileTrue(drivebase.forward());
@@ -133,10 +147,18 @@ public class RobotContainer {
   }
 
   /**
-   * Toggle whether the robot is currently in field oriented or robot oriented control. This will affect the default drive command, but will not affect any commands that are currently running.
-   * The default  drive command will automatically switch between field oriented and robot oriented control based on the value of the FieldOriented flag, so toggling this will immediately change the behavior of the default drive command.
-   * This does not affect any non-default drive commands, so if you have a command that explicitly requires the drivebase and is currently running, toggling this will not change the behavior of that command until it ends and the default command is scheduled again.
-  */
+   * Toggle whether the robot is currently in field oriented or robot oriented
+   * control. This will affect the default drive command, but will not affect any
+   * commands that are currently running.
+   * The default drive command will automatically switch between field oriented
+   * and robot oriented control based on the value of the FieldOriented flag, so
+   * toggling this will immediately change the behavior of the default drive
+   * command.
+   * This does not affect any non-default drive commands, so if you have a command
+   * that explicitly requires the drivebase and is currently running, toggling
+   * this will not change the behavior of that command until it ends and the
+   * default command is scheduled again.
+   */
   private void toggleFieldOriented() {
     FieldOriented = !FieldOriented;
   }
@@ -147,9 +169,8 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   // public Command getAutonomousCommand() {
-  //   // An example command will be run in autonomous
-  //   return Autos.exampleAuto(drivebase);
+  // // An example command will be run in autonomous
+  // return Autos.exampleAuto(drivebase);
   // }
 
 }
-
